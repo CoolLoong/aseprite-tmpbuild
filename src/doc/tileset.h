@@ -33,6 +33,7 @@ namespace doc {
            const UserData& data) : image(image), data(data) { }
     };
     static UserData kNoUserData;
+
   public:
     typedef std::vector<Tile> Tiles;
     typedef Tiles::iterator iterator;
@@ -58,6 +59,11 @@ namespace doc {
     int baseIndex() const { return m_baseIndex; }
     void setBaseIndex(int index) { m_baseIndex = index; }
 
+    // Allow to match tiles with the given flags/flips automatically
+    // in Auto/Stack modes.
+    tile_flags matchFlags() const { return m_matchFlags; }
+    void setMatchFlags(const tile_flags tf) { m_matchFlags = tf; }
+
     // Cached compressed tileset read/writen directly from .aseprite
     // files.
     void discardCompressedData();
@@ -78,8 +84,7 @@ namespace doc {
     ImageRef get(const tile_index ti) const {
       if (ti >= 0 && ti < size())
         return m_tiles[ti].image;
-      else
-        return ImageRef(nullptr);
+      return ImageRef(nullptr);
     }
     void set(const tile_index ti,
              const ImageRef& image);
@@ -87,8 +92,7 @@ namespace doc {
     UserData& getTileData(const tile_index ti) const {
       if (ti >= 0 && ti < size())
         return const_cast<UserData&>(m_tiles[ti].data);
-      else
-        return kNoUserData;
+      return kNoUserData;
     }
     void setTileData(const tile_index ti,
                      const UserData& userData);
@@ -152,6 +156,7 @@ namespace doc {
     TilesetHashTable m_hash;
     std::string m_name;
     int m_baseIndex = 1;
+    tile_flags m_matchFlags = 0;
     struct External {
       std::string filename;
       tileset_index tileset;
